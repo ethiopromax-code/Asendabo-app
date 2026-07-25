@@ -1,13 +1,53 @@
 import 'package:flutter/material.dart';
-import 'main_navigation_screen.dart'; // ሎጊን ሲደረግ ወደሚወስደው ዋናው ገጽ
+import 'main_navigation_screen.dart';
+import 'signup_page.dart'; // የመመዝገቢያውን ገጽ ማስገባት
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _obscurePassword = true;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void _handleLogin() {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('እባክዎ ኢሜይል እና የይለፍ ቃል ያስገቡ'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+
+    // ወደ ዋናው ገጽ ማሸጋገር
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const MainNavigationScreen(),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF121212), // Dark Theme Background
+      backgroundColor: const Color(0xFF121212),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -16,15 +56,12 @@ class LoginPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // የኮሌጁ አርማ ወይም አዶ
                 const Icon(
                   Icons.school_rounded,
                   size: 80,
                   color: Color(0xFF0C62B6),
                 ),
                 const SizedBox(height: 24),
-                
-                // ርዕስ (Title)
                 const Text(
                   'እንኳን ደህና መጡ\nወደ አካውንትዎ ይግቡ',
                   textAlign: TextAlign.center,
@@ -37,13 +74,14 @@ class LoginPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 32),
 
-                // የኢሜይል / ስልክ ቁጥር ማስገቢያ
+                // ኢሜይል ማስገቢያ
                 TextField(
+                  controller: _emailController,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    labelText: 'ኢሜይል ወይም ስልክ ቁጥር',
+                    labelText: 'ኢሜይል አድራሻ',
                     labelStyle: const TextStyle(color: Colors.grey),
-                    prefixIcon: const Icon(Icons.person_outline, color: Color(0xFF0C62B6)),
+                    prefixIcon: const Icon(Icons.email_outlined, color: Color(0xFF0C62B6)),
                     filled: true,
                     fillColor: const Color(0xFF1E1E1E),
                     border: OutlineInputBorder(
@@ -56,13 +94,24 @@ class LoginPage extends StatelessWidget {
 
                 // የይለፍ ቃል ማስገቢያ
                 TextField(
-                  obscureText: true,
+                  controller: _passwordController,
+                  obscureText: _obscurePassword,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     labelText: 'የይለፍ ቃል',
                     labelStyle: const TextStyle(color: Colors.grey),
                     prefixIcon: const Icon(Icons.lock_outline, color: Color(0xFF0C62B6)),
-                    suffixIcon: const Icon(Icons.visibility_off, color: Colors.grey),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                        color: Colors.grey,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
                     filled: true,
                     fillColor: const Color(0xFF1E1E1E),
                     border: OutlineInputBorder(
@@ -73,17 +122,9 @@ class LoginPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
 
-                // የመግቢያ ቁልፍ (Login Button)
+                // የመግቢያ ቁልፍ
                 ElevatedButton(
-                  onPressed: () {
-                    // ተጠቃሚው "ግባ" ሲጫን ወደ MainNavigationScreen ይሄዳል
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const MainNavigationScreen(),
-                      ),
-                    );
-                  },
+                  onPressed: _handleLogin,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF0C62B6),
                     padding: const EdgeInsets.symmetric(vertical: 16),
@@ -102,7 +143,7 @@ class LoginPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
 
-                // አካውንት የሌላቸው ወደ መመዝገቢያ ማዘዋወሪያ
+                // ወደ Sign Up ገጽ መውሰጃ
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -112,7 +153,12 @@ class LoginPage extends StatelessWidget {
                     ),
                     GestureDetector(
                       onTap: () {
-                        // Sign Up ገጽ ሲኖር እዚህ ጋር ማገናኘት ይቻላል
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SignupPage(),
+                          ),
+                        );
                       },
                       child: const Text(
                         'አካውንት ይፍጠሩ',
