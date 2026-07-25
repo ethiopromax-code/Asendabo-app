@@ -1,8 +1,10 @@
-name: Build Flutter APK
+Name: Build Flutter APK
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
   workflow_dispatch:
 
 jobs:
@@ -10,8 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up Java Environment
         uses: actions/setup-java@v4
@@ -28,11 +29,20 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Build Flutter APK
-        run: flutter build apk --release --no-tree-shake-icons
+      - name: Build Flutter APK (Auto-Fix Fallback)
+        run: |
+          echo "Attempting initial build..."
+          if ! flutter build apk --release --no-tree-shake-icons; then
+            echo "---------------------------------------------------"
+            echo "Build failed! Re-creating Android platform files..."
+            echo "---------------------------------------------------"
+            flutter create --platforms=android .
+            flutter pub get
+            flutter build apk --release --no-tree-shake-icons
+          fi
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: asendabo-app-release
+          name: release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
