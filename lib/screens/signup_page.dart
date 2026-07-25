@@ -72,7 +72,7 @@ class _SignupPageState extends State<SignupPage> {
       return;
     }
 
-    // ተጠቃሚውን ወደ መዝገብ ቤት (Database) መጨመር
+    // ተጠቃሚውን ወደ መዝገብ ቤት መጨመር
     AppDatabase.registeredUsers.add({
       'email': email,
       'password': password,
@@ -85,7 +85,6 @@ class _SignupPageState extends State<SignupPage> {
       ),
     );
 
-    // ወደ ዋናው ገጽ ማሸጋገር
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
