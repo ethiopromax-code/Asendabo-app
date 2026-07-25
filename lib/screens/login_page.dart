@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'main_navigation_screen.dart';
-import 'signup_page.dart'; // የመመዝገቢያውን ገጽ ማስገባት
+import 'signup_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -35,7 +35,6 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    // ወደ ዋናው ገጽ ማሸጋገር
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -73,8 +72,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 const SizedBox(height: 32),
-
-                // ኢሜይል ማስገቢያ
                 TextField(
                   controller: _emailController,
                   style: const TextStyle(color: Colors.white),
@@ -91,8 +88,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-
-                // የይለፍ ቃል ማስገቢያ
                 TextField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
@@ -121,8 +116,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 const SizedBox(height: 24),
-
-                // የመግቢያ ቁልፍ
                 ElevatedButton(
                   onPressed: _handleLogin,
                   style: ElevatedButton.styleFrom(
@@ -142,8 +135,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 const SizedBox(height: 24),
-
-                // ወደ Sign Up ገጽ መውሰጃ
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
