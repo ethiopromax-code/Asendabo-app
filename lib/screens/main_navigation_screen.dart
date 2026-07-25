@@ -14,11 +14,11 @@ class MainNavigationScreen extends StatefulWidget {
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = const [
-    HomePage(),
-    ChatPage(),
-    NotificationPage(),
-    ProfilePage(),
+  final List<Widget> _pages = [
+    const HomePage(),
+    const ChatPage(),
+    const NotificationPage(),
+    const ProfilePage(),
   ];
 
   @override
@@ -45,7 +45,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             children: [
               _buildNavItem(0, 'መነሻ', Icons.home, Icons.home_outlined),
               _buildNavItem(1, 'ቻት', Icons.chat_bubble, Icons.chat_bubble_outline),
-              const SizedBox(width: 48), // ለ FloatingActionButton የሚሆን ክፍተት
+              const SizedBox(width: 48),
               _buildNavItem(2, 'ማሳወቂያ', Icons.notifications, Icons.notifications_outlined),
               _buildNavItem(3, 'መገለጫ', Icons.person, Icons.person_outline),
             ],
@@ -96,39 +96,71 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           bottom: MediaQuery.of(context).viewInsets.bottom + 20,
           top: 20, left: 20, right: 20,
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('አዲስ ፖስት ያድርጉ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
-            const SizedBox(height: 15),
-            TextField(
-              style: const TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                labelText: 'ርዕስ',
-                labelStyle: const TextStyle(color: Colors.grey),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Center(
+                child: Text(
+                  'አዲስ ፖስት ያድርጉ',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                ),
               ),
-            ),
-            const SizedBox(height: 10),
-            TextField(
-              maxLines: 3,
-              style: const TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                labelText: 'መግለጫ...',
-                labelStyle: const TextStyle(color: Colors.grey),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+              const SizedBox(height: 15),
+              TextField(
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  labelText: 'ርዕስ (Title)',
+                  labelStyle: const TextStyle(color: Colors.grey),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                ),
               ),
-            ),
-            const SizedBox(height: 15),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF0C62B6),
-                minimumSize: const Size(double.infinity, 45),
+              const SizedBox(height: 12),
+              TextField(
+                maxLines: 3,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  labelText: 'መግለጫ (Description)...',
+                  labelStyle: const TextStyle(color: Colors.grey),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                ),
               ),
-              onPressed: () => Navigator.pop(context),
-              child: const Text('ለጥፍ (Post)', style: TextStyle(color: Colors.white)),
-            )
-          ],
+              const SizedBox(height: 15),
+              OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 45),
+                  side: const BorderSide(color: Color(0xFF38BDF8)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('ፎቶ ተመርጧል!')),
+                  );
+                },
+                icon: const Icon(Icons.photo_library, color: Color(0xFF38BDF8)),
+                label: const Text('ፎቶ ምረጡ (Upload Photo)', style: TextStyle(color: Color(0xFF38BDF8))),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF0C62B6),
+                  minimumSize: const Size(double.infinity, 45),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('ፖስቱ ወደ መነሻ ገጽ (Home) ተልኳል!'),
+                      backgroundColor: Color(0xFF0C62B6),
+                    ),
+                  );
+                },
+                child: const Text('ለጥፍ (Post)', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              )
+            ],
+          ),
         ),
       ),
     );
