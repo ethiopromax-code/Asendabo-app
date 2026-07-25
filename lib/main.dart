@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 void main() {
-  // የፍላተር ማሰሪያ መጀመሩን ማረጋገጥ
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const AsendaboApp());
 }
@@ -42,7 +41,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    super.initFirebaseAndApp();
+    super.initState(); // ትክክለኛው የ슈ፐር መጠሪያ
+    initFirebaseAndApp();
   }
 
   Future<void> initFirebaseAndApp() async {
