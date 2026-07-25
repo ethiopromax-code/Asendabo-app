@@ -6,21 +6,16 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // አዳዲስ ፖስቶች ሁልጊዜ ከመጀመሪያው (ከላይ) እንዲታዩ የተደረጉበት ዝርዝር
     final List<Map<String, dynamic>> posts = [
-      // 1. አዲስ የተደረገ ፖስት (ሁልጊዜ ከላይ እንዲሆን የሚደረግ)
       {
-        'type': 'post',
         'name': 'አቤል ከበደ',
         'role': 'ICT - Level 3 ተማሪ',
         'avatar': 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100',
-        'title': 'የአሰንዳቦ ፖሊቴክኒክ ኮሌጅ አዲስ የمبادرة (Initiative) ስራ',
-        'description': 'ተማሪዎች በፈጠራ ስራዎች ላይ ያላቸውን አቅም ለማሳደግ እና አዳዲስ ሶፍትዌሮችን ለማልማት የሚያስችል አዲስ የግሩፕ መድረክ ተፈጥሯል!',
+        'title': 'የአሰንዳቦ ፖሊቴክኒክ ኮሌጅ አዲስ የፈጠራ ስራ',
+        'description': 'ተማሪዎች በቴክኖሎጂ እና በሶፍትዌር ልማት ያላቸውን አቅም ለማሳደግ የሚያስችል አዲስ የግሩፕ መድረክ ተፈጥሯል!',
         'image': 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=500',
       },
-      // 2. ቀደም ሲል የነበሩ ፖስቶች ከታች ይከተላሉ
       {
-        'type': 'post',
         'name': 'ኮሌጅ አስተዳደር (Admin)',
         'role': 'Asendabo Polytechnic College',
         'avatar': 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100',
@@ -29,7 +24,6 @@ class HomePage extends StatelessWidget {
         'image': 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=500',
       },
       {
-        'type': 'post',
         'name': 'መ/ር አበበ (ICT Head)',
         'role': 'ICT Department',
         'avatar': 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=100',
@@ -45,7 +39,7 @@ class HomePage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
-          // A. የአየር ሁኔታ ካርድ (ሁልጊዜ ከላይ በቋሚነት የሚቀመጥ)
+          // 1. የአየር ሁኔታ ካርድ (Weather Condition Card)
           Card(
             margin: const EdgeInsets.only(bottom: 16.0),
             elevation: 4,
@@ -63,10 +57,10 @@ class HomePage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.between,
                     children: [
                       Row(
-                        children: [
-                          const Icon(Icons.cloud_outlined, color: Color(0xFF38BDF8), size: 28),
-                          const SizedBox(width: 10),
-                          const Text(
+                        children: const [
+                          Icon(Icons.cloud_outlined, color: Color(0xFF38BDF8), size: 28),
+                          SizedBox(width: 10),
+                          Text(
                             'የአሰንዳቦ ከተማ የአየር ሁኔታ',
                             style: TextStyle(
                               color: Colors.white,
@@ -105,7 +99,7 @@ class HomePage extends StatelessWidget {
             ),
           ),
 
-          // B. አዳዲስ ፖስቶች (ከላይ እንዲጀምሩ የተደረጉ)
+          // 2. የፖስቶች ዝርዝር
           ...posts.map((post) => Card(
                 margin: const EdgeInsets.only(bottom: 16.0),
                 elevation: 4,
