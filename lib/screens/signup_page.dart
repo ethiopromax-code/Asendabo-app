@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'login_page.dart';
 import 'main_navigation_screen.dart';
 
 class SignupPage extends StatefulWidget {
@@ -22,6 +23,10 @@ class _SignupPageState extends State<SignupPage> {
     super.dispose();
   }
 
+  bool _isValidGmail(String email) {
+    return RegExp(r"^[a-zA-Z0-9._%+-]+@gmail\.com$").hasMatch(email);
+  }
+
   void _handleSignup() {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
@@ -31,6 +36,26 @@ class _SignupPageState extends State<SignupPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('እባክዎ ሁሉንም ባዶ ቦታዎች ይሙሉ'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+
+    if (!_isValidGmail(email)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('እባክዎ ትክክለኛ የጂሜይል (Gmail) አድራሻ ይጠቀሙ'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+
+    if (password.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('የይለፍ ቃል ቢያንስ ከ 6 ፊደላት በላይ መሆን አለበት'),
           backgroundColor: Colors.redAccent,
         ),
       );
@@ -47,7 +72,20 @@ class _SignupPageState extends State<SignupPage> {
       return;
     }
 
-    // ምዝገባው ሲሳካ በቀጥታ ወደ ዋናው ገጽ ያስገባል
+    // ተጠቃሚውን ወደ መዝገብ ቤት (Database) መጨመር
+    AppDatabase.registeredUsers.add({
+      'email': email,
+      'password': password,
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('አካውንትዎ በሳካ ሁኔታ ተፈጥሯል!'),
+        backgroundColor: Colors.green,
+      ),
+    );
+
+    // ወደ ዋናው ገጽ ማሸጋገር
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
@@ -63,8 +101,9 @@ class _SignupPageState extends State<SignupPage> {
       backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
         backgroundColor: const Color(0xFF1E1E1E),
-        title: const Text('አካውንት መፍጠሪያ'),
+        title: const Text('አካውንት መፍጠሪያ', style: TextStyle(color: Colors.white)),
         elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SafeArea(
         child: Center(
@@ -90,13 +129,12 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                 ),
                 const SizedBox(height: 32),
-
-                // ኢሜይል ማስገቢያ
                 TextField(
                   controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    labelText: 'ኢሜይል አድራሻ',
+                    labelText: 'ጂሜይል አድራሻ (name@gmail.com)',
                     labelStyle: const TextStyle(color: Colors.grey),
                     prefixIcon: const Icon(Icons.email_outlined, color: Color(0xFF0C62B6)),
                     filled: true,
@@ -108,16 +146,25 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-
-                // የይለፍ ቃል ማስገቢያ
                 TextField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    labelText: 'የይለፍ ቃል',
+                    labelText: 'የአፑ መለያ የይለፍ ቃል (Password)',
                     labelStyle: const TextStyle(color: Colors.grey),
                     prefixIcon: const Icon(Icons.lock_outline, color: Color(0xFF0C62B6)),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                        color: Colors.grey,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
                     filled: true,
                     fillColor: const Color(0xFF1E1E1E),
                     border: OutlineInputBorder(
@@ -127,8 +174,6 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-
-                // የይለፍ ቃል ማረጋገጫ
                 TextField(
                   controller: _confirmPasswordController,
                   obscureText: _obscurePassword,
@@ -146,8 +191,6 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                 ),
                 const SizedBox(height: 24),
-
-                // የመመዝገቢያ ቁልፍ
                 ElevatedButton(
                   onPressed: _handleSignup,
                   style: ElevatedButton.styleFrom(
