@@ -25,11 +25,6 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Clean Old Android Files & Re-create
-        run: |
-          rm -rf android
-          flutter create . --org com.asendabo --project-name asendabo_app --platforms=android
-
       - name: Install Dependencies
         run: flutter pub get
 
