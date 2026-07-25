@@ -34,8 +34,11 @@ jobs:
       - name: Verify Code Quality
         run: flutter analyze --no-fatal-infos
 
-      - name: Re-generate Android Platform Files
-        run: flutter create --platforms=android .
+      # ሙሉውን የ android ፎልደር በማፅዳት የ v1 embedding ኤረርን ሙሉ በሙሉ ያስወግዳል
+      - name: Wipe and Re-create Clean Android Platform
+        run: |
+          rm -rf android
+          flutter create --platforms=android .
 
       - name: Build Release APK
         run: flutter build apk --release --no-tree-shake-icons
