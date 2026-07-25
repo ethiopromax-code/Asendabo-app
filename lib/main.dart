@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/main_navigation_screen.dart';
+import 'screens/login_page.dart';
 
 void main() {
   runApp(const AsendaboApp());
@@ -25,11 +25,12 @@ class AsendaboApp extends StatelessWidget {
           backgroundColor: Color(0xFF1E1E1E),
           elevation: 0,
         ),
-        bottomAppBarTheme: const BottomAppBarThemeData(
-          color: Color(0xFF1E1E1E),
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+          backgroundColor: Color(0xFF1E1E1E),
+          selectedItemColor: Color(0xFF0C62B6),
         ),
       ),
-      home: const MainNavigationScreen(),
+      home: const LoginPage(),
     );
   }
 }
