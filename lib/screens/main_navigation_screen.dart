@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'home_page.dart';
 import 'chat_page.dart';
+import 'notification_page.dart';
 import 'profile_page.dart';
 
 class MainNavigationScreen extends StatefulWidget {
@@ -16,7 +17,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   final List<Widget> _pages = const [
     HomePage(),
     ChatPage(),
-    SizedBox.shrink(),
+    NotificationPage(),
     ProfilePage(),
   ];
 
@@ -42,10 +43,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildNavItem(0, 'Home', Icons.home, Icons.home_outlined),
-              _buildNavItem(1, 'Chat', Icons.chat_bubble, Icons.chat_bubble_outline),
-              const SizedBox(width: 48),
-              _buildNavItem(3, 'Profile', Icons.person, Icons.person_outline),
+              _buildNavItem(0, 'መነሻ', Icons.home, Icons.home_outlined),
+              _buildNavItem(1, 'ቻት', Icons.chat_bubble, Icons.chat_bubble_outline),
+              const SizedBox(width: 48), // ለ FloatingActionButton የሚሆን ክፍተት
+              _buildNavItem(2, 'ማሳወቂያ', Icons.notifications, Icons.notifications_outlined),
+              _buildNavItem(3, 'መገለጫ', Icons.person, Icons.person_outline),
             ],
           ),
         ),
@@ -133,7 +135,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   }
 }
 
-// የጋራ AppBar ለሁሉም ገጾች
 PreferredSizeWidget buildCommonAppBar() {
   return AppBar(
     title: const Text('Asendabo Polytechnic C...', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
