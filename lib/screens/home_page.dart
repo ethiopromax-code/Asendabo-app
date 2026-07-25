@@ -1,44 +1,121 @@
 import 'package:flutter/material.dart';
 import 'main_navigation_screen.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> posts = [
-      {
-        'name': 'አቤል ከበደ',
-        'role': 'ICT - Level 3 ተማሪ',
-        'avatar': 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100',
-        'title': 'የአሰንዳቦ ፖሊቴክኒክ ኮሌጅ አዲስ የፈጠራ ስራ',
-        'description': 'ተማሪዎች በቴክኖሎጂ እና በሶፍትዌር ልማት ያላቸውን አቅም ለማሳደግ የሚያስችል አዲስ የግሩፕ መድረክ ተፈጥሯል!',
-        'image': 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=500',
-      },
-      {
-        'name': 'ኮሌጅ አስተዳደር (Admin)',
-        'role': 'Asendabo Polytechnic College',
-        'avatar': 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100',
-        'title': 'አዲስ የዲጂታል ላይብረሪ አገልግሎት ተጀመረ',
-        'description': 'ተማሪዎች በየትኛውም ሰዓት ትምህርታዊ መጻሕፍትን እና የጥናት ማጣቀሻዎችን በኦንላይን ማግኘት እንዲችሉ አዲሱ የዲጂታል ላይብረሪ ሲስተም መጀመሩን እናሳውቃለን።',
-        'image': 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=500',
-      },
-      {
-        'name': 'መ/ር አበበ (ICT Head)',
-        'role': 'ICT Department',
-        'avatar': 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=100',
-        'title': 'የኮምፒውተር ላብራቶሪ የጥገና እና ማሻሻያ መርሃ-ግብር',
-        'description': 'ለሁሉም የደረጃ 3 እና 4 ተማሪዎች፦ በዋናው የICT ላብራቶሪ ውስጥ አዳዲስ አውታረ መረቦች (Networks) እና ሶፍትዌሮች የመትከል ስራ ነገ ይከናወናል።',
-        'image': 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=500',
-      },
-    ];
+  State<HomePage> createState() => _HomePageState();
+}
 
+class _HomePageState extends State<HomePage> {
+  // የፖስቶች ዝርዝር (አዳዲስ ፖስቶች ሁልጊዜ ከላይ እንዲመጡ ከፊት ይቀመጣሉ)
+  final List<Map<String, dynamic>> posts = [
+    {
+      'name': 'አቤል ከበደ',
+      'role': 'ICT - Level 3 ተማሪ',
+      'avatar': 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100',
+      'title': 'የአሰንዳቦ ፖሊቴክኒክ ኮሌጅ አዲስ የፈጠራ ስራ',
+      'description': 'ተማሪዎች በቴክኖሎጂ እና በሶፍትዌር ልማት ያላቸውን አቅም ለማሳደግ የሚያስችል አዲስ የግሩፕ መድረክ ተፈጥሯል!',
+      'image': 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=500',
+    },
+    {
+      'name': 'ኮሌጅ አስተዳደር (Admin)',
+      'role': 'Asendabo Polytechnic College',
+      'avatar': 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100',
+      'title': 'አዲስ የዲጂታል ላይብረሪ አገልግሎት ተጀመረ',
+      'description': 'ተማሪዎች በየትኛውም ሰዓት ትምህርታዊ መጻሕፍትን እና የጥናት ማጣቀሻዎችን በኦንላይን ማግኘት እንዲችሉ አዲሱ የዲጂታል ላይብረሪ ሲስተም መጀመሩን እናሳውቃለን።',
+      'image': 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=500',
+    },
+  ];
+
+  // አዲስ ፖስት ለመጨመር የሚያስችል ዴቨሎፕመንት መስኮት (Dialog)
+  void _showAddPostDialog(BuildContext context) {
+    final TextEditingController titleController = TextEditingController();
+    final TextEditingController descController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF1E1E1E),
+          title: const Text(
+            'አዲስ ፖስት መጻፊያ',
+            style: TextStyle(color: Colors.white, fontSize: 16),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: titleController,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: const InputDecoration(
+                    labelText: 'ርዕስ (Title)',
+                    labelStyle: TextStyle(color: Colors.grey),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xFF38BDF8)),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: descController,
+                  style: const TextStyle(color: Colors.white),
+                  maxLines: 3,
+                  decoration: const InputDecoration(
+                    labelText: 'መግለጫ (Description)',
+                    labelStyle: TextStyle(color: Colors.grey),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xFF38BDF8)),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('ሰርዝ', style: TextStyle(color: Colors.grey)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF0C62B6),
+              ),
+              onPressed: () {
+                if (titleController.text.isNotEmpty && descController.text.isNotEmpty) {
+                  setState(() {
+                    // አዲሱ ፖስት ሁልጊዜ ከላይ እንዲገባ (Newest First) ከዝርዝሩ መጀመሪያ ይጨመራል
+                    posts.insert(0, {
+                      'name': 'አቤል ከበደ (እርስዎ)',
+                      'role': 'ICT - Level 3 ተማሪ',
+                      'avatar': 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100',
+                      'title': titleController.text,
+                      'description': descController.text,
+                      'image': null, // ፎቶ ከሌለ ባዶ ይሁን
+                    });
+                  });
+                  Navigator.pop(context);
+                }
+              },
+              child: const Text('ለጥፍ (Post)', style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
       appBar: buildCommonAppBar(),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
+          // 1. የአየር ሁኔታ ካርድ
           Card(
             margin: const EdgeInsets.only(bottom: 16.0),
             elevation: 4,
@@ -53,7 +130,7 @@ class HomePage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween, // ተስተካክሏል
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
                         children: const [
@@ -90,13 +167,36 @@ class HomePage extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'በዚህ ሳምንት በአሰንዳቦ ፖሊቴክኒክ ኮሌጅ እና አካባቢው የሚኖረው የአየር ሁኔታ ለተማሪዎች እንቅስቃሴ እና ለተግባር ስልጠናዎች ምቹ ነው።',
+                    'በዚህ ሳምንት በአሰንዳቦ ፖሊቴክኒክ ኮሌጅ እና አካባቢው የሚኖረው የአየር ሁኔታ ለተማሪዎች እንቅስቃሴ ምቹ ነው።',
                     style: TextStyle(fontSize: 12, color: Colors.grey[300], height: 1.3),
                   ),
                 ],
               ),
             ),
           ),
+
+          // 2. ፖስት ለመጨመር የሚያስችል ቁልፍ (Action Banner)
+          Container(
+            margin: const EdgeInsets.only(bottom: 16.0),
+            child: ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF0C62B6),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onPressed: () => _showAddPostDialog(context),
+              icon: const Icon(Icons.add_circle_outline),
+              label: const Text(
+                'አዲስ ሐሳብ ወይም ማስታወቂያ አጋራ (Create Post)',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+              ),
+            ),
+          ),
+
+          // 3. የፖስቶች ዝርዝር (Dynamic Posts)
           ...posts.map((post) => Card(
                 margin: const EdgeInsets.only(bottom: 16.0),
                 elevation: 4,
@@ -162,14 +262,6 @@ class HomePage extends StatelessWidget {
                           ),
                         ),
                       ],
-                      const SizedBox(height: 10),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () {},
-                          child: const Text('ተጨማሪ አንብብ (More)', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF38BDF8))),
-                        ),
-                      )
                     ],
                   ),
                 ),
