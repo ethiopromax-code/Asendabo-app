@@ -25,7 +25,7 @@ class AsendaboApp extends StatelessWidget {
           backgroundColor: Color(0xFF1E1E1E),
           elevation: 0,
         ),
-        bottomAppBarTheme: const BottomAppBarTheme(
+        bottomAppBarTheme: const BottomAppBarThemeData(
           color: Color(0xFF1E1E1E),
         ),
       ),
