@@ -39,7 +39,6 @@ class HomePage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
-          // 1. የአየር ሁኔታ ካርድ (Weather Condition Card)
           Card(
             margin: const EdgeInsets.only(bottom: 16.0),
             elevation: 4,
@@ -54,7 +53,7 @@ class HomePage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.between,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween, // ተስተካክሏል
                     children: [
                       Row(
                         children: const [
@@ -98,8 +97,6 @@ class HomePage extends StatelessWidget {
               ),
             ),
           ),
-
-          // 2. የፖስቶች ዝርዝር
           ...posts.map((post) => Card(
                 margin: const EdgeInsets.only(bottom: 16.0),
                 elevation: 4,
