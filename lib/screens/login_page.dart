@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'main_navigation_screen.dart';
 import 'signup_page.dart';
-
-class AppDatabase {
-  static final List<Map<String, String>> registeredUsers = [];
-}
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -16,6 +13,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
   bool _obscurePassword = true;
 
   @override
@@ -26,10 +24,10 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   bool _isValidGmail(String email) {
-    return RegExp(r"^[a-zA-Z0-9._%+-]+@gmail\.com$").hasMatch(email);
+    return RegExp(r'^[a-zA-Z0-9._%+-]+@gmail\.com$').hasMatch(email);
   }
 
-  void _handleLogin() {
+  Future<void> _handleLogin() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
@@ -46,73 +44,81 @@ class _LoginPageState extends State<LoginPage> {
     if (!_isValidGmail(email)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('እባክዎ ትክክለኛ የጂሜይል (Gmail) አድራሻ ይጠቀሙ'),
+          content: Text('እባክዎ ትክክለኛ የጂሜይል አድራሻ ያስገቡ'),
           backgroundColor: Colors.redAccent,
         ),
       );
       return;
     }
 
-    final userExists = AppDatabase.registeredUsers.any(
-      (user) => user['email'] == email && user['password'] == password,
-    );
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
 
-    if (!userExists) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          backgroundColor: const Color(0xFF1E1E1E),
-          title: const Text('አካውንት አልተገኘም', style: TextStyle(color: Colors.white)),
-          content: const Text(
-            'ይህ ኢሜይል አልተመዘገበም። እባክዎ መጀመሪያ "አካውንት ይፍጠሩ" የሚለውን በመጫን ይመዝገቡ።',
-            style: TextStyle(color: Colors.grey),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('እሺ', style: TextStyle(color: Color(0xFF0C62B6))),
-            ),
-          ],
+      if (!mounted) return;
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const MainNavigationScreen(),
         ),
       );
-      return;
-    }
+    } on FirebaseAuthException catch (e) {
+      String message = 'Login failed';
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const MainNavigationScreen(),
-      ),
-    );
+      switch (e.code) {
+        case 'user-not-found':
+          message = 'አካውንት አልተገኘም';
+          break;
+        case 'wrong-password':
+          message = 'የይለፍ ቃል ተሳስቷል';
+          break;
+        case 'invalid-email':
+          message = 'ትክክለኛ ኢሜይል ያስገቡ';
+          break;
+        case 'invalid-credential':
+          message = 'ኢሜይል ወይም የይለፍ ቃል ተሳስቷል';
+          break;
+        default:
+          message = e.message ?? 'Login failed';
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   void _showForgotPasswordDialog() {
-    final TextEditingController resetEmailController = TextEditingController();
+    final resetEmailController = TextEditingController();
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (_) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E1E),
-        title: const Text('የይለፍ ቃል ማስታወሻ', style: TextStyle(color: Colors.white)),
-        content: Column(
+        title: const Text(
+          'የይለፍ ቃል መቀየሪያ',
+          style: TextStyle(color: Colors.white),
+        ),
+                content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              'የመዝገብ ኢሜይል አድራሻዎን ያስገቡ፤ የይለፍ ቃል መቀየሪያ ሊንክ ወደ ጂሜይልዎ ይላካልዎታል።',
-              style: TextStyle(color: Colors.grey, fontSize: 13),
-            ),
-            const SizedBox(height: 16),
             TextField(
               controller: resetEmailController,
+              keyboardType: TextInputType.emailAddress,
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
-                labelText: 'ጂሜይል አድራሻ',
+                labelText: 'ጂሜይል',
                 labelStyle: const TextStyle(color: Colors.grey),
                 filled: true,
                 fillColor: const Color(0xFF121212),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide.none,
                 ),
               ),
             ),
@@ -121,30 +127,40 @@ class _LoginPageState extends State<LoginPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('ይቅር', style: TextStyle(color: Colors.grey)),
+            child: const Text(
+              'ይቅር',
+              style: TextStyle(color: Colors.grey),
+            ),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0C62B6)),
-            onPressed: () {
+            onPressed: () async {
               final email = resetEmailController.text.trim();
-              if (_isValidGmail(email)) {
+
+              try {
+                await FirebaseAuth.instance
+                    .sendPasswordResetEmail(email: email);
+
+                if (!mounted) return;
+
                 Navigator.pop(context);
+
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('የይለፍ ቃል መቀየሪያ ሊንክ ወደ $email ተልኳል!'),
+                  const SnackBar(
+                    content: Text(
+                        'Password reset email has been sent.'),
                     backgroundColor: Colors.green,
                   ),
                 );
-              } else {
+              } on FirebaseAuthException catch (e) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('እባክዎ ትክክለኛ ጂሜይል ያስገቡ'),
-                    backgroundColor: Colors.redAccent,
+                  SnackBar(
+                    content: Text(e.message ?? 'Error'),
+                    backgroundColor: Colors.red,
                   ),
                 );
               }
             },
-            child: const Text('ላክ', style: TextStyle(color: Colors.white)),
+            child: const Text('ላክ'),
           ),
         ],
       ),
@@ -158,57 +174,54 @@ class _LoginPageState extends State<LoginPage> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Icon(
-                  Icons.school_rounded,
+                  Icons.school,
                   size: 80,
                   color: Color(0xFF0C62B6),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 20),
                 const Text(
-                  'እንኳን ደህና መጡ\nወደ አካውንትዎ ይግቡ',
+                  'እንኳን ደህና መጡ',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 24,
+                    fontSize: 28,
                     fontWeight: FontWeight.bold,
-                    height: 1.3,
                   ),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 30),
+
                 TextField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    labelText: 'ጂሜይል (name@gmail.com)',
-                    labelStyle: const TextStyle(color: Colors.grey),
-                    prefixIcon: const Icon(Icons.email_outlined, color: Color(0xFF0C62B6)),
-                    filled: true,
-                    fillColor: const Color(0xFF1E1E1E),
+                    labelText: 'Gmail',
+                    prefixIcon: const Icon(Icons.email),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+
+                const SizedBox(height: 20),
+
                 TextField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    labelText: 'የይለፍ ቃል',
-                    labelStyle: const TextStyle(color: Colors.grey),
-                    prefixIcon: const Icon(Icons.lock_outline, color: Color(0xFF0C62B6)),
+                    labelText: 'Password',
+                    prefixIcon: const Icon(Icons.lock),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                        color: Colors.grey,
+                        _obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                       ),
                       onPressed: () {
                         setState(() {
@@ -216,26 +229,28 @@ class _LoginPageState extends State<LoginPage> {
                         });
                       },
                     ),
-                    filled: true,
-                    fillColor: const Color(0xFF1E1E1E),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                            const SizedBox(height: 12),
+
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
                     onPressed: _showForgotPasswordDialog,
                     child: const Text(
-                      'ይለፍ ቃል ረስተዋል? (Forgot Password)',
-                      style: TextStyle(color: Color(0xFF38BDF8), fontSize: 13),
+                      'ይለፍ ቃል ረስተዋል?',
+                      style: TextStyle(
+                        color: Color(0xFF38BDF8),
+                      ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+
+                const SizedBox(height: 20),
+
                 ElevatedButton(
                   onPressed: _handleLogin,
                   style: ElevatedButton.styleFrom(
@@ -248,26 +263,28 @@ class _LoginPageState extends State<LoginPage> {
                   child: const Text(
                     'ግባ',
                     style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
                       color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+
+                const SizedBox(height: 25),
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text(
                       'አካውንት የለዎትም? ',
-                      style: TextStyle(color: Colors.grey),
+                      style: TextStyle(color: Colors.white70),
                     ),
                     GestureDetector(
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const SignupPage(),
+                            builder: (_) => const SignupPage(),
                           ),
                         );
                       },
@@ -288,4 +305,4 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-}
+}    
