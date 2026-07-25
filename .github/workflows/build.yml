@@ -25,14 +25,16 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Generate Android Project Structure
-        run: flutter create . --org com.asendabo --project-name asendabo_app --platforms=android
+      - name: Clean Old Android Files & Re-create
+        run: |
+          rm -rf android
+          flutter create . --org com.asendabo --project-name asendabo_app --platforms=android
 
       - name: Install Dependencies
         run: flutter pub get
 
       - name: Build Flutter APK
-        run: flutter build apk --release --no-tree-shake-icons --verbose
+        run: flutter build apk --release --no-tree-shake-icons
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
